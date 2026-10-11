@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import QRCode from 'qrcode';
+import { generateBrandedQRCode } from '../../utils/qrLogo';
 import { Printer, Pill, ShieldAlert, QrCode, Calendar, Layers } from 'lucide-react';
 import { Medication } from '../../types/medication';
 import { AllergyRecord, AllergyStatus } from '../../types/allergy';
@@ -40,7 +40,7 @@ export const HealthCardPage: React.FC = () => {
       // Generate compact emergency QR code for the print page
       const payload = generateEmergencyPayload(p, m, a, s);
       const url = getEmergencyUrl(payload);
-      QRCode.toDataURL(url, { width: 140, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } })
+      generateBrandedQRCode(url, 200)
         .then(setPrintedQrUrl)
         .catch(console.error);
     } catch (err) {

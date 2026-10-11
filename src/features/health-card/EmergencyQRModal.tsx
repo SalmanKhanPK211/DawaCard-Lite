@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import QRCode from 'qrcode';
+import { generateBrandedQRCode } from '../../utils/qrLogo';
 import { QrCode, Download, ShieldAlert, CheckCircle, Info, ExternalLink } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
@@ -39,16 +39,9 @@ export const EmergencyQRModal: React.FC<EmergencyQRModalProps> = ({
       const url = getEmergencyUrl(payload);
       setEmergencyUrl(url);
 
-      QRCode.toDataURL(url, {
-        width: 320,
-        margin: 2,
-        color: {
-          dark: '#0F172A',
-          light: '#FFFFFF',
-        },
-      })
+      generateBrandedQRCode(url, 360)
         .then((dataUrl) => setQrDataUrl(dataUrl))
-        .catch((err) => console.error('QR generation error:', err));
+        .catch((err) => console.error('Branded QR generation error:', err));
     }
   }, [isOpen, patient, medications, allergies, allergyStatus]);
 
