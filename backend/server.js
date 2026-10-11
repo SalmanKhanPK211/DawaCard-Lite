@@ -149,6 +149,10 @@ Output strict JSON matching this exact structure:
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`DawaCard Lite AI Proxy Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`DawaCard Lite AI Proxy Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
