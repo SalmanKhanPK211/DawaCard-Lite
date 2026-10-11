@@ -89,24 +89,21 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap sm:flex-col gap-2 shrink-0">
-            <Button
-              size="md"
-              className="bg-white text-[#0F766E] hover:bg-slate-100 font-bold border-none"
-              icon={<Plus className="w-4 h-4 text-[#0F766E]" />}
+          <div className="flex flex-wrap sm:flex-col gap-2.5 shrink-0">
+            <button
               onClick={onAddMedicationClick}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white hover:bg-slate-50 text-[#0F766E] font-bold text-sm shadow-sm transition-colors cursor-pointer"
             >
-              Add Medication
-            </Button>
-            <Button
-              variant="outline"
-              size="md"
-              className="bg-emerald-900/40 text-white hover:bg-emerald-900/60 border-emerald-400/40"
-              icon={<ScanLine className="w-4 h-4" />}
+              <Plus className="w-4 h-4 text-[#0F766E] shrink-0" />
+              <span className="text-[#0F766E]">Add Medication</span>
+            </button>
+            <button
               onClick={onScanClick}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0a524c] hover:bg-[#08433e] text-white border border-emerald-400/40 font-semibold text-sm transition-colors cursor-pointer shadow-sm"
             >
-              Scan Prescription (AI)
-            </Button>
+              <ScanLine className="w-4 h-4 text-white shrink-0" />
+              <span className="text-white">Scan Prescription (AI)</span>
+            </button>
           </div>
         </div>
       </div>
