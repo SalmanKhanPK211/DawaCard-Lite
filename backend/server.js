@@ -114,21 +114,46 @@ Output strict JSON matching this exact structure:
 }
 `;
 
-    const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      generationConfig: { responseMimeType: 'application/json' },
-    });
+    const candidateModels = Array.from(
+      new Set(
+        [
+          process.env.GEMINI_MODEL,
+          'gemini-3.8-flash',
+          'gemini-3.5-flash',
+          'gemini-flash-latest',
+        ].filter(Boolean)
+      )
+    );
 
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          data: imageBase64,
-          mimeType: mimeType,
-        },
-      },
-    ]);
+    let result = null;
+    let lastError = null;
+
+    for (const mName of candidateModels) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: mName,
+          generationConfig: { responseMimeType: 'application/json' },
+        });
+
+        result = await model.generateContent([
+          prompt,
+          {
+            inlineData: {
+              data: imageBase64,
+              mimeType: mimeType,
+            },
+          },
+        ]);
+        if (result) break;
+      } catch (err) {
+        lastError = err;
+        console.warn(`Model ${mName} failed (${err.message}), trying next candidate model...`);
+      }
+    }
+
+    if (!result) {
+      throw lastError || new Error('No available Gemini model could process the request.');
+    }
 
     const text = result.response.text();
     if (!text) {
