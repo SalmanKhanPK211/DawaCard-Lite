@@ -15,6 +15,9 @@ DawaCard Lite is an open-source, local-first web application designed for patien
   1. *Known Allergies Recorded*
   2. *No Known Allergies (NKA)* explicitly reported
   3. *Allergy Status Unknown / Not Yet Recorded*
+- **Cloud Authentication (Supabase):** Optional email/password sign-in and account registration powered by Supabase with persistent sessions.
+- **Offline Emergency QR Pass:** Compact QR pass encoding vital emergency payload with branded center logo for instant scan-to-view access without internet.
+- **4-Box Visual Daily Pill Schedule Grid:** Intuitive Morning, Afternoon, Evening, Bedtime categorization for daily dose adherence.
 - **AI Prescription Reader (Optional):** Upload prescription photos (JPEG, PNG, WebP) for structured field extraction via Google Gemini AI through a secure backend proxy.
 - **Mandatory Human Verification:** Every AI-extracted candidate field must be reviewed, edited, and confirmed by the user before saving.
 - **Printable Health Summary:** One-page A4 print layout with print-to-PDF formatting, high-contrast tables, and no navigation controls in print mode.
