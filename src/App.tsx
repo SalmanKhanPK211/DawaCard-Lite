@@ -9,6 +9,8 @@ import { HealthCardPage } from './features/health-card/HealthCardPage';
 import { MedicationModal } from './features/medications/MedicationModal';
 import { PrescriptionReaderModal } from './features/prescription-reader/PrescriptionReaderModal';
 import { EmergencyViewerModal } from './features/health-card/EmergencyViewerModal';
+import { AuthModal } from './features/auth/AuthModal';
+import { AuthProvider } from './contexts/AuthContext';
 import { decodeEmergencyPayload, EmergencyDataPayload } from './utils/qrPayload';
 import { Medication } from './types/medication';
 
@@ -17,6 +19,7 @@ export const AppContent: React.FC = () => {
   const [isMedicationModalOpen, setIsMedicationModalOpen] = useState(false);
   const [medicationToEdit, setMedicationToEdit] = useState<Medication | null>(null);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [emergencyPayload, setEmergencyPayload] = useState<EmergencyDataPayload | null>(null);
 
@@ -53,6 +56,10 @@ export const AppContent: React.FC = () => {
     setIsScanModalOpen(true);
   };
 
+  const handleOpenAuth = () => {
+    setIsAuthModalOpen(true);
+  };
+
   const handleMedicationSaved = () => {
     setRefreshKey((prev) => prev + 1);
   };
@@ -63,12 +70,14 @@ export const AppContent: React.FC = () => {
       <MobileNavbar
         onAddMedicationClick={handleOpenAddMedication}
         onScanClick={handleOpenScan}
+        onAuthClick={handleOpenAuth}
       />
 
       {/* Desktop Sidebar */}
       <Sidebar
         onAddMedicationClick={handleOpenAddMedication}
         onScanClick={handleOpenScan}
+        onAuthClick={handleOpenAuth}
       />
 
       {/* Main Content Body */}
@@ -123,14 +132,22 @@ export const AppContent: React.FC = () => {
           }}
         />
       )}
+
+      {/* Cloud Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 };
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }

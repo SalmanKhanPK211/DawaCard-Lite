@@ -1,13 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Pill, ShieldAlert, FileText, LayoutDashboard, User, ScanLine } from 'lucide-react';
+import { Pill, ShieldAlert, FileText, LayoutDashboard, ScanLine, LogIn, LogOut, User } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface SidebarProps {
   onScanClick: () => void;
   onAddMedicationClick: () => void;
+  onAuthClick: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onScanClick, onAddMedicationClick }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  onScanClick,
+  onAddMedicationClick,
+  onAuthClick,
+}) => {
+  const { user, signOut } = useAuth();
+
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/medications', label: 'Medications', icon: Pill },
@@ -74,12 +82,42 @@ export const Sidebar: React.FC<SidebarProps> = ({ onScanClick, onAddMedicationCl
         </nav>
       </div>
 
-      {/* Footer Info */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500 space-y-1">
-        <p className="font-semibold text-slate-700">Privacy & Local First</p>
-        <p className="text-[11px] leading-normal text-slate-500">
-          No cloud DB. Information stays in your browser IndexedDB.
-        </p>
+      {/* Footer Area with User Profile / Login */}
+      <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+        {user ? (
+          <div className="p-2.5 bg-white border border-slate-200 rounded-lg flex items-center justify-between shadow-2xs">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                {user.email ? user.email[0].toUpperCase() : 'U'}
+              </div>
+              <div className="truncate">
+                <span className="font-semibold text-slate-800 text-xs block truncate">
+                  {user.user_metadata?.display_name || user.email?.split('@')[0]}
+                </span>
+                <span className="text-[10px] text-slate-400 block truncate">{user.email}</span>
+              </div>
+            </div>
+            <button
+              onClick={signOut}
+              className="text-slate-400 hover:text-red-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={onAuthClick}
+            className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 px-3 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer border border-slate-200 shadow-2xs"
+          >
+            <LogIn className="w-3.5 h-3.5 text-[#0F766E]" />
+            <span>Sign In / Sign Up</span>
+          </button>
+        )}
+
+        <div className="text-[11px] text-slate-400 leading-tight">
+          DawaCard Lite • Local-first with optional cloud sync
+        </div>
       </div>
     </aside>
   );
