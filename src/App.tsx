@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileNavbar } from './components/layout/MobileNavbar';
@@ -8,6 +8,8 @@ import { AllergyPage } from './features/allergies/AllergyPage';
 import { HealthCardPage } from './features/health-card/HealthCardPage';
 import { MedicationModal } from './features/medications/MedicationModal';
 import { PrescriptionReaderModal } from './features/prescription-reader/PrescriptionReaderModal';
+import { EmergencyViewerModal } from './features/health-card/EmergencyViewerModal';
+import { decodeEmergencyPayload, EmergencyDataPayload } from './utils/qrPayload';
 import { Medication } from './types/medication';
 
 export const AppContent: React.FC = () => {
@@ -16,6 +18,26 @@ export const AppContent: React.FC = () => {
   const [medicationToEdit, setMedicationToEdit] = useState<Medication | null>(null);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [emergencyPayload, setEmergencyPayload] = useState<EmergencyDataPayload | null>(null);
+
+  useEffect(() => {
+    const checkHash = () => {
+      const hash = window.location.hash;
+      if (hash.includes('#emergency?data=')) {
+        const encoded = hash.split('#emergency?data=')[1];
+        if (encoded) {
+          const payload = decodeEmergencyPayload(encoded);
+          if (payload) {
+            setEmergencyPayload(payload);
+          }
+        }
+      }
+    };
+
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   const handleOpenAddMedication = () => {
     setMedicationToEdit(null);
@@ -91,6 +113,16 @@ export const AppContent: React.FC = () => {
         onClose={() => setIsScanModalOpen(false)}
         onMedicationSaved={handleMedicationSaved}
       />
+
+      {emergencyPayload && (
+        <EmergencyViewerModal
+          payload={emergencyPayload}
+          onClose={() => {
+            setEmergencyPayload(null);
+            window.location.hash = '';
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
   Plus,
   ArrowRight,
   BookOpen,
+  QrCode,
 } from 'lucide-react';
 import { Medication } from '../../types/medication';
 import { AllergyRecord, AllergyStatus } from '../../types/allergy';
@@ -19,6 +20,8 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
+import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
+import { EmergencyQRModal } from '../health-card/EmergencyQRModal';
 
 export interface DashboardPageProps {
   onAddMedicationClick: () => void;
@@ -35,6 +38,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const [allergyStatus, setAllergyStatusState] = useState<AllergyStatus>('unknown');
   const [patient, setPatient] = useState<PatientProfile | null>(null);
   const [isLoadingSample, setIsLoadingSample] = useState(false);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   const loadData = async () => {
     try {
@@ -112,7 +116,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <DisclaimerBanner />
 
       {/* Overview Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-5 flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -133,7 +137,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Allergy Record Status
             </span>
-            <div className="text-base font-bold text-slate-900">
+            <div className="text-base font-bold text-slate-900 truncate max-w-[130px]">
               {allergyStatus === 'known_allergies'
                 ? `${allergies.length} Listed Allergen${allergies.length === 1 ? '' : 's'}`
                 : allergyStatus === 'no_known_allergies'
@@ -162,16 +166,45 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               Printable Summary
             </span>
             <div className="text-base font-bold text-[#0F766E] flex items-center gap-1">
-              <span>Create Health Card</span>
+              <span>Health Card</span>
               <ArrowRight className="w-4 h-4" />
             </div>
-            <p className="text-xs text-slate-500">Ready for PDF download or print</p>
+            <p className="text-xs text-slate-500">A4 PDF & Printout</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-teal-50 text-[#0F766E] flex items-center justify-center">
             <FileText className="w-6 h-6" />
           </div>
         </Card>
+
+        <Card
+          className="p-5 flex items-center justify-between cursor-pointer hover:border-[#0F766E]"
+          onClick={() => setIsQRModalOpen(true)}
+        >
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Offline Pass
+            </span>
+            <div className="text-base font-bold text-slate-900 flex items-center gap-1">
+              <span>Emergency QR</span>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+            <p className="text-xs text-slate-500">Instant scan for EMTs</p>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
+            <QrCode className="w-6 h-6" />
+          </div>
+        </Card>
       </div>
+
+      {/* 4-Box Daily Pill Schedule Organizer Grid on Dashboard */}
+      {currentMeds.length > 0 && (
+        <Card className="p-5 border-slate-200">
+          <DailyScheduleGrid
+            medications={currentMeds}
+            title="Daily Pill Schedule (4-Box Organizer View)"
+          />
+        </Card>
+      )}
 
       {/* First-Time User Empty State */}
       {medications.length === 0 ? (
@@ -254,6 +287,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                       {med.prescribedInstructions}
                     </p>
                   )}
+
+                  {med.timesOfDay && med.timesOfDay.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {med.timesOfDay.map((t, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-[#0F766E] border border-emerald-200 capitalize"
+                        >
+                          {t.replace('_', ' ')}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 mt-3">
@@ -267,6 +313,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* Emergency QR Modal */}
+      <EmergencyQRModal
+        isOpen={isQRModalOpen}
+        onClose={() => setIsQRModalOpen(false)}
+        patient={patient}
+        medications={medications}
+        allergies={allergies}
+        allergyStatus={allergyStatus}
+      />
     </div>
   );
 };

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Sun, CloudSun, Moon, BedDouble, Zap } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
-import { Medication, MedicationStatus } from '../../types/medication';
+import { Medication, MedicationStatus, TimeOfDay } from '../../types/medication';
 import { storageService } from '../../services/storage/db';
 
 export interface MedicationModalProps {
@@ -29,6 +30,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
   const [route, setRoute] = useState('');
   const [frequency, setFrequency] = useState('');
   const [duration, setDuration] = useState('');
+  const [timesOfDay, setTimesOfDay] = useState<TimeOfDay[]>([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState<MedicationStatus>('current');
@@ -45,6 +47,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
       setRoute(medicationToEdit.route || '');
       setFrequency(medicationToEdit.frequency || '');
       setDuration(medicationToEdit.duration || '');
+      setTimesOfDay(medicationToEdit.timesOfDay || []);
       setStartDate(medicationToEdit.startDate || '');
       setEndDate(medicationToEdit.endDate || '');
       setStatus(medicationToEdit.status || 'current');
@@ -57,6 +60,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
       setRoute(initialValues.route || '');
       setFrequency(initialValues.frequency || '');
       setDuration(initialValues.duration || '');
+      setTimesOfDay(initialValues.timesOfDay || []);
       setStartDate(initialValues.startDate || '');
       setEndDate(initialValues.endDate || '');
       setStatus(initialValues.status || 'current');
@@ -75,10 +79,17 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
     setRoute('');
     setFrequency('');
     setDuration('');
+    setTimesOfDay([]);
     setStartDate('');
     setEndDate('');
     setStatus('current');
     setNotes('');
+  };
+
+  const toggleTimeOfDay = (time: TimeOfDay) => {
+    setTimesOfDay((prev) =>
+      prev.includes(time) ? prev.filter((t) => t !== time) : [...prev, time]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,6 +110,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
         route: route.trim() || undefined,
         frequency: frequency.trim() || undefined,
         duration: duration.trim() || undefined,
+        timesOfDay: timesOfDay.length > 0 ? timesOfDay : undefined,
         startDate: startDate.trim() || undefined,
         endDate: endDate.trim() || undefined,
         status,
@@ -113,6 +125,14 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  const timeSlotButtons = [
+    { id: 'morning' as TimeOfDay, label: 'Morning', icon: Sun },
+    { id: 'afternoon' as TimeOfDay, label: 'Afternoon', icon: CloudSun },
+    { id: 'evening' as TimeOfDay, label: 'Evening', icon: Moon },
+    { id: 'bedtime' as TimeOfDay, label: 'Bedtime', icon: BedDouble },
+    { id: 'as_needed' as TimeOfDay, label: 'As Needed', icon: Zap },
+  ];
 
   return (
     <Modal
@@ -165,10 +185,10 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
           </div>
         </div>
 
-        {/* Section 2: Instructions */}
+        {/* Section 2: Instructions & Daily Pillbox Timings */}
         <div className="space-y-3 pt-2 border-t border-slate-100">
           <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            2. Prescribed Dose & Frequency
+            2. Prescribed Dose & Daily Schedule
           </h4>
           <Textarea
             label="Prescribed Dose / Instructions (Optional)"
@@ -177,6 +197,37 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
             onChange={(e) => setPrescribedInstructions(e.target.value)}
             rows={2}
           />
+
+          {/* 4-Box Pillbox Time of Day Selector */}
+          <div>
+            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              Pillbox Time of Day (Optional)
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+              {timeSlotButtons.map((slot) => {
+                const Icon = slot.icon;
+                const isSelected = timesOfDay.includes(slot.id);
+                return (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    onClick={() => toggleTimeOfDay(slot.id)}
+                    className={`flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#0F766E] text-white border-[#0F766E] shadow-2xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <span>{slot.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Select times to populate your 4-box pill schedule organizer.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input

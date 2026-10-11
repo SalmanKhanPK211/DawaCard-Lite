@@ -1,5 +1,6 @@
 export type MedicationStatus = 'current' | 'discontinued';
 export type MedicationSource = 'manual' | 'ai-reviewed';
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'bedtime' | 'as_needed';
 
 export interface Medication {
   id: string;
@@ -10,6 +11,7 @@ export interface Medication {
   route?: string;
   frequency?: string;
   duration?: string;
+  timesOfDay?: TimeOfDay[];
   startDate?: string;
   endDate?: string;
   status: MedicationStatus;

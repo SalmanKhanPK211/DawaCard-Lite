@@ -12,6 +12,11 @@ import {
   ShieldCheck,
   X,
   FileText,
+  Sun,
+  CloudSun,
+  Moon,
+  BedDouble,
+  Zap,
 } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
@@ -24,7 +29,7 @@ import {
   checkAiBackendStatus,
 } from '../../services/ai/aiService';
 import { PrescriptionExtractionResult, ExtractedField, ConfidenceCategory } from '../../types/ai';
-import { MedicationInput, MedicationStatus } from '../../types/medication';
+import { MedicationInput, MedicationStatus, TimeOfDay } from '../../types/medication';
 import { storageService } from '../../services/storage/db';
 
 export interface PrescriptionReaderModalProps {
@@ -66,6 +71,7 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
     frequency: string;
     duration: string;
     notes: string;
+    timesOfDay: TimeOfDay[];
     status: MedicationStatus;
   }>({
     name: '',
@@ -76,6 +82,7 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
     frequency: '',
     duration: '',
     notes: '',
+    timesOfDay: [],
     status: 'current',
   });
 
@@ -144,6 +151,15 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
         fieldMap[f.field] = f.value || '';
       });
 
+      // Simple heuristic for default pillbox timing
+      const freqLower = (fieldMap.frequency || '').toLowerCase() + ' ' + (fieldMap.prescribedInstructions || '').toLowerCase();
+      const detectedTimes: TimeOfDay[] = [];
+      if (freqLower.includes('morning') || freqLower.includes('daily') || freqLower.includes('qam')) detectedTimes.push('morning');
+      if (freqLower.includes('noon') || freqLower.includes('afternoon') || freqLower.includes('lunch') || freqLower.includes('tid')) detectedTimes.push('afternoon');
+      if (freqLower.includes('evening') || freqLower.includes('dinner') || freqLower.includes('bid') || freqLower.includes('tid')) detectedTimes.push('evening');
+      if (freqLower.includes('night') || freqLower.includes('bedtime') || freqLower.includes('qhs')) detectedTimes.push('bedtime');
+      if (freqLower.includes('prn') || freqLower.includes('as needed')) detectedTimes.push('as_needed');
+
       setReviewFields({
         name: fieldMap.name || '',
         strength: fieldMap.strength || '',
@@ -153,6 +169,7 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
         frequency: fieldMap.frequency || '',
         duration: fieldMap.duration || '',
         notes: fieldMap.notes || '',
+        timesOfDay: detectedTimes,
         status: 'current',
       });
 
@@ -181,6 +198,7 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
         route: reviewFields.route.trim() || undefined,
         frequency: reviewFields.frequency.trim() || undefined,
         duration: reviewFields.duration.trim() || undefined,
+        timesOfDay: reviewFields.timesOfDay.length > 0 ? reviewFields.timesOfDay : undefined,
         status: reviewFields.status,
         notes: reviewFields.notes.trim() || undefined,
         source: 'ai-reviewed',
@@ -481,6 +499,46 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
                     {getFieldInfo('prescribedInstructions')?.supportingText}"
                   </p>
                 )}
+              </div>
+
+              {/* Pillbox Time of Day (4-Box Organizer) */}
+              <div className="p-3 rounded-lg border border-slate-200 bg-white space-y-2">
+                <label className="text-xs font-bold text-slate-800">
+                  Pillbox Time of Day (Daily Schedule Organizer)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                  {[
+                    { id: 'morning' as TimeOfDay, label: 'Morning', icon: Sun },
+                    { id: 'afternoon' as TimeOfDay, label: 'Afternoon', icon: CloudSun },
+                    { id: 'evening' as TimeOfDay, label: 'Evening', icon: Moon },
+                    { id: 'bedtime' as TimeOfDay, label: 'Bedtime', icon: BedDouble },
+                    { id: 'as_needed' as TimeOfDay, label: 'As Needed', icon: Zap },
+                  ].map((slot) => {
+                    const Icon = slot.icon;
+                    const isSelected = reviewFields.timesOfDay.includes(slot.id);
+                    return (
+                      <button
+                        key={slot.id}
+                        type="button"
+                        onClick={() => {
+                          const current = reviewFields.timesOfDay;
+                          const updated = isSelected
+                            ? current.filter((t) => t !== slot.id)
+                            : [...current, slot.id];
+                          setReviewFields({ ...reviewFields, timesOfDay: updated });
+                        }}
+                        className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#0F766E] text-white border-[#0F766E] shadow-2xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                        <span>{slot.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Field 4: Dosage Form & Route */}

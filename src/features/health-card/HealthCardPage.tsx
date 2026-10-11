@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Printer, FileText, User, Calendar, Pill, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+import QRCode from 'qrcode';
+import { Printer, Pill, ShieldAlert, QrCode, Calendar, Layers } from 'lucide-react';
 import { Medication } from '../../types/medication';
 import { AllergyRecord, AllergyStatus } from '../../types/allergy';
 import { PatientProfile } from '../../types/patient';
 import { storageService } from '../../services/storage/db';
 import { Button } from '../../components/ui/Button';
-import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
 import { PatientProfileModal } from '../patient/PatientProfileModal';
 import { LocalDataBanner } from '../../components/common/LocalDataBanner';
+import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
+import { EmergencyQRModal } from './EmergencyQRModal';
+import { generateEmergencyPayload, getEmergencyUrl } from '../../utils/qrPayload';
 
 export const HealthCardPage: React.FC = () => {
   const [patient, setPatient] = useState<PatientProfile | null>(null);
@@ -16,7 +18,10 @@ export const HealthCardPage: React.FC = () => {
   const [allergies, setAllergies] = useState<AllergyRecord[]>([]);
   const [allergyStatus, setAllergyStatusState] = useState<AllergyStatus>('unknown');
   const [includeDiscontinued, setIncludeDiscontinued] = useState(false);
+  const [includeScheduleGrid, setIncludeScheduleGrid] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const [printedQrUrl, setPrintedQrUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
   const loadHealthCardData = async () => {
@@ -31,6 +36,13 @@ export const HealthCardPage: React.FC = () => {
       setMedications(m);
       setAllergies(a);
       setAllergyStatusState(s);
+
+      // Generate compact emergency QR code for the print page
+      const payload = generateEmergencyPayload(p, m, a, s);
+      const url = getEmergencyUrl(payload);
+      QRCode.toDataURL(url, { width: 140, margin: 1, color: { dark: '#0F172A', light: '#FFFFFF' } })
+        .then(setPrintedQrUrl)
+        .catch(console.error);
     } catch (err) {
       console.error('Failed to load health card data:', err);
     } finally {
@@ -80,16 +92,15 @@ export const HealthCardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-white p-2 border border-slate-200 rounded-lg cursor-pointer">
-            <input
-              type="checkbox"
-              checked={includeDiscontinued}
-              onChange={(e) => setIncludeDiscontinued(e.target.checked)}
-              className="rounded text-[#0F766E] focus:ring-[#0F766E]"
-            />
-            <span>Include Discontinued Meds</span>
-          </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={<QrCode className="w-4 h-4 text-[#0F766E]" />}
+            onClick={() => setIsQRModalOpen(true)}
+          >
+            Emergency QR Pass
+          </Button>
 
           <Button
             size="md"
@@ -99,6 +110,31 @@ export const HealthCardPage: React.FC = () => {
             Print / Save PDF
           </Button>
         </div>
+      </div>
+
+      {/* Option Toggles Toolbar (No Print) */}
+      <div className="flex flex-wrap items-center gap-4 bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-700 no-print">
+        <span className="font-bold text-slate-900">Print Options:</span>
+
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={includeScheduleGrid}
+            onChange={(e) => setIncludeScheduleGrid(e.target.checked)}
+            className="rounded text-[#0F766E] focus:ring-[#0F766E]"
+          />
+          <span>Include 4-Box Daily Pill Organizer Grid</span>
+        </label>
+
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={includeDiscontinued}
+            onChange={(e) => setIncludeDiscontinued(e.target.checked)}
+            className="rounded text-[#0F766E] focus:ring-[#0F766E]"
+          />
+          <span>Include Discontinued Medications</span>
+        </label>
       </div>
 
       <LocalDataBanner onDataChanged={loadHealthCardData} />
@@ -121,13 +157,34 @@ export const HealthCardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-right text-xs text-slate-600 space-y-0.5">
-            <p>
-              <strong className="text-slate-900">Generated:</strong> {generatedDate}
-            </p>
-            <p>
-              <strong className="text-slate-900">Last Updated:</strong> {lastUpdatedText}
-            </p>
+          <div className="flex items-center gap-4">
+            {/* Embedded Printable Offline QR Code */}
+            {printedQrUrl && (
+              <div className="flex items-center gap-2 text-right">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-800 uppercase tracking-tighter block">
+                    Offline Emergency QR
+                  </span>
+                  <span className="text-[9px] text-slate-500 block">
+                    Scan for instant record
+                  </span>
+                </div>
+                <img
+                  src={printedQrUrl}
+                  alt="Offline Emergency QR"
+                  className="w-16 h-16 border border-slate-300 rounded p-0.5 bg-white shrink-0"
+                />
+              </div>
+            )}
+
+            <div className="text-right text-xs text-slate-600 space-y-0.5 border-l border-slate-200 pl-3">
+              <p>
+                <strong className="text-slate-900">Generated:</strong> {generatedDate}
+              </p>
+              <p>
+                <strong className="text-slate-900">Last Updated:</strong> {lastUpdatedText}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -277,6 +334,16 @@ export const HealthCardPage: React.FC = () => {
           )}
         </div>
 
+        {/* 4-Box Daily Pill Schedule Organizer Grid */}
+        {includeScheduleGrid && displayedMedications.length > 0 && (
+          <div className="pt-2">
+            <DailyScheduleGrid
+              medications={displayedMedications}
+              title="Daily Pill Schedule (4-Box Organizer View)"
+            />
+          </div>
+        )}
+
         {/* Printable Mandatory Medical Disclaimer Footer */}
         <div className="border-t-2 border-slate-900 pt-4 text-[11px] text-slate-600 space-y-1 bg-slate-50 p-3 rounded-lg border border-slate-200">
           <p className="font-bold text-slate-900">
@@ -288,7 +355,7 @@ export const HealthCardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Patient Profile Modal */}
+      {/* Modals */}
       <PatientProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
@@ -296,6 +363,15 @@ export const HealthCardPage: React.FC = () => {
         onProfileSaved={(updated) => {
           setPatient(updated);
         }}
+      />
+
+      <EmergencyQRModal
+        isOpen={isQRModalOpen}
+        onClose={() => setIsQRModalOpen(false)}
+        patient={patient}
+        medications={medications}
+        allergies={allergies}
+        allergyStatus={allergyStatus}
       />
     </div>
   );
