@@ -47,6 +47,7 @@ export async function signUpWithEmail(
         data: {
           display_name: displayName || email.split('@')[0],
         },
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
       },
     });
 
