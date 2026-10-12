@@ -22,6 +22,7 @@ import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
 import { EmergencyQRModal } from '../health-card/EmergencyQRModal';
 import { SafetyAlertWidget } from '../safety/SafetyAlertWidget';
+import { SEO } from '../../components/common/SEO';
 
 export interface DashboardPageProps {
   onAddMedicationClick: () => void;
@@ -78,6 +79,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16">
+      <SEO title="Dashboard" titleUr="ڈیش بورڈ" canonicalPath="/" />
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-[#0F766E] to-[#115E59] text-white rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

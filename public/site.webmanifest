@@ -1,0 +1,19 @@
+{
+  "name": "DawaCard Lite — AI Medication Manager & Emergency Health Card",
+  "short_name": "DawaCard Lite",
+  "description": "Intelligent personal medication record, AI prescription scanner, drug-drug interaction checker, and emergency medical ID card.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#0F766E",
+  "orientation": "portrait-primary",
+  "categories": ["medical", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

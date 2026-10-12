@@ -1,0 +1,10 @@
+# Robots.txt for DawaCard Lite
+# https://dawa-card-lite.vercel.app
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://dawa-card-lite.vercel.app/sitemap.xml
+Host: https://dawa-card-lite.vercel.app

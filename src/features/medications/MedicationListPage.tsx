@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
+import { SEO } from '../../components/common/SEO';
 
 export interface MedicationListPageProps {
   onAddMedicationClick: () => void;
@@ -59,6 +60,13 @@ export const MedicationListPage: React.FC<MedicationListPageProps> = ({
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16">
+      <SEO
+        title="Medication Management"
+        titleUr="ادویات کی فہرست"
+        description="Organize, update, or discontinue your prescribed medication records with a 4-box daily pill organizer."
+        descriptionUr="جاری ادویات، خوراک اور 4 بکسوں پر مشتمل شیڈول کا انتظام۔"
+        canonicalPath="/medications"
+      />
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

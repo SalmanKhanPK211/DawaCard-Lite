@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 import { useAuth } from '../../contexts/AuthContext';
+import { SEO } from '../../components/common/SEO';
 
 export const AllergyPage: React.FC = () => {
   const { user } = useAuth();
@@ -114,6 +115,13 @@ export const AllergyPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
+      <SEO
+        title="Allergy Tracking"
+        titleUr="الرجی اور ردعمل کا ریکارڈ"
+        description="Record user-reported drug, food, or environmental allergies and explicit allergy status."
+        descriptionUr="معلوم الرجیز، منفی ردعمل اور طبی الرجی اسٹیٹس کا اندراج۔"
+        canonicalPath="/allergies"
+      />
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Allergy Management</h1>

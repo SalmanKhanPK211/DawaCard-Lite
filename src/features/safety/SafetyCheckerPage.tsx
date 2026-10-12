@@ -24,6 +24,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Input } from '../../components/ui/Input';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
+import { SEO } from '../../components/common/SEO';
 
 export const SafetyCheckerPage: React.FC = () => {
   const [medications, setMedications] = useState<Medication[]>([]);
@@ -106,6 +107,13 @@ export const SafetyCheckerPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16">
+      <SEO
+        title="AI Drug & Allergy Conflict Checker"
+        titleUr="اے آئی ادویاتی حفاظت اور تعاملات"
+        description="Automated clinical pharmacovigilance checking active medications and allergies for dangerous drug-drug interactions with Google Gemini AI."
+        descriptionUr="مصنوعی ذہانت اور فارماکولوجی کے ذریعے ادویات کے آپسی تصادم اور الرجی کی خودکار جانچ۔"
+        canonicalPath="/safety"
+      />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

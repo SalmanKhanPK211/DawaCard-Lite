@@ -24,6 +24,7 @@ import { LanguageToggle } from '../../components/common/LanguageToggle';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { SEO } from '../../components/common/SEO';
 
 export const UserManualPage: React.FC = () => {
   const { isUrdu } = useLanguage();
@@ -414,6 +415,13 @@ export const UserManualPage: React.FC = () => {
 
   return (
     <div className={`space-y-6 max-w-5xl mx-auto pb-20 ${isUrdu ? 'rtl font-urdu' : 'ltr'}`}>
+      <SEO
+        title="User Manual & Documentation"
+        titleUr="رہنمائے صارف اور دستاویزات"
+        description="Comprehensive official guide to DawaCard Lite in English and Urdu, including prescription scanning, conflict checking, and emergency QR codes."
+        descriptionUr="دوا کارڈ لائٹ کا مکمل اردو اور انگریزی دستی کتابچہ اور تفصیلی رہنمائی۔"
+        canonicalPath="/manual"
+      />
       {/* Header Banner */}
       <div className="bg-linear-to-r from-teal-900 via-teal-800 to-emerald-900 text-white rounded-2xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">

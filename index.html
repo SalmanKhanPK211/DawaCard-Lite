@@ -2,12 +2,139 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DawaCard Lite — Personal Medication Record & Printable Health Card</title>
+
+    <!-- Primary SEO Metadata -->
+    <title>DawaCard Lite — AI Medication Manager, Prescription Scanner &amp; Emergency Health Card</title>
+    <meta name="description" content="Organize daily medications with a 4-box pill schedule, scan prescriptions using Gemini AI, check dangerous drug-drug interactions, and generate an emergency medical health card with instant EMT QR access." />
+    <meta name="keywords" content="medication manager, drug interaction checker, prescription scanner, AI medical OCR, emergency health card, drug allergy tracker, daily pill organizer, dawa card, emergency medical ID, electronic medication record, health card Pakistan, urdu health app" />
+    <meta name="author" content="Salman Khan" />
+    <meta name="publisher" content="DawaCard Lite" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Canonical & Language Alternates -->
+    <link rel="canonical" href="https://dawa-card-lite.vercel.app/" />
+    <link rel="alternate" hreflang="en" href="https://dawa-card-lite.vercel.app/" />
+    <link rel="alternate" hreflang="ur" href="https://dawa-card-lite.vercel.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://dawa-card-lite.vercel.app/" />
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dawa-card-lite.vercel.app/" />
+    <meta property="og:site_name" content="DawaCard Lite" />
+    <meta property="og:title" content="DawaCard Lite — AI Medication Manager &amp; Emergency Health Card" />
+    <meta property="og:description" content="Intelligent personal medication record with AI prescription extraction, drug conflict checking, and emergency QR code access for first responders." />
+    <meta property="og:image" content="https://dawa-card-lite.vercel.app/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DawaCard Lite — AI Medication Management and Emergency Health Card" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ur_PK" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://dawa-card-lite.vercel.app/" />
+    <meta name="twitter:title" content="DawaCard Lite — AI Medication Manager &amp; Emergency Health Card" />
+    <meta name="twitter:description" content="Organize prescriptions, scan doctor notes with Gemini AI, detect dangerous drug interactions, and export an emergency health card." />
+    <meta name="twitter:image" content="https://dawa-card-lite.vercel.app/og-image.svg" />
+    <meta name="twitter:image:alt" content="DawaCard Lite interface preview" />
+
+    <!-- PWA & Mobile Web App Capabilities -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0F766E" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DawaCard Lite" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Structured Data (JSON-LD): WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "DawaCard Lite",
+      "url": "https://dawa-card-lite.vercel.app/",
+      "description": "Intelligent personal medication record, AI prescription scanner, drug-drug interaction checker, and emergency health card with QR access.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "AI Prescription OCR scanner powered by Google Gemini",
+        "Clinical drug-drug and drug-allergy conflict checker",
+        "Daily 4-box pill schedule organizer (Morning, Afternoon, Evening, Bedtime)",
+        "Instant emergency QR code for first responders and EMTs without login",
+        "Printable A4 medical summary and health card",
+        "Bilingual English and Urdu interface"
+      ]
+    }
+    </script>
+
+    <!-- Structured Data (JSON-LD): Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "DawaCard Lite",
+      "url": "https://dawa-card-lite.vercel.app/",
+      "logo": "https://dawa-card-lite.vercel.app/favicon.svg"
+    }
+    </script>
+
+    <!-- Structured Data (JSON-LD): FAQPage for Rich Search Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is DawaCard Lite?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DawaCard Lite is an AI-powered personal medication management and emergency health card web application. It organizes daily pill schedules, scans prescriptions using Google Gemini AI, monitors clinical drug-drug interactions, and provides an emergency QR code for first responders."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the AI prescription scanner work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Users upload a photograph of a physical paper prescription. Google Gemini AI extracts medication name, dosage form, strength, instructions, and schedule into candidate fields with side-by-side human verification before saving."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do paramedics access the emergency health card?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paramedics and first responders scan the patient's DawaCard emergency QR code with any standard smartphone camera. No login or password is required, giving instant visibility to blood type, critical allergies, active medications, and emergency contacts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does DawaCard Lite support Urdu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, DawaCard Lite provides a complete English and Urdu (اردو) language toggle across the entire application and official user manual."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased">
     <div id="root"></div>

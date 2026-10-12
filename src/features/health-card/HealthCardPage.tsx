@@ -10,6 +10,7 @@ import { PatientProfileModal } from '../patient/PatientProfileModal';
 import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
 import { EmergencyQRModal } from './EmergencyQRModal';
 import { generateEmergencyPayload, getEmergencyUrl } from '../../utils/qrPayload';
+import { SEO } from '../../components/common/SEO';
 
 export const HealthCardPage: React.FC = () => {
   const [patient, setPatient] = useState<PatientProfile | null>(null);
@@ -82,6 +83,13 @@ export const HealthCardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-16">
+      <SEO
+        title="Personal Health Card"
+        titleUr="ایمرجنسی ہیلتھ کارڈ"
+        description="Generate and print a clean medication and allergy summary with instant EMT emergency QR code."
+        descriptionUr="پرنٹ کے قابل A4 میڈیکل سمری کارڈ اور ریسکیو عملے کے لیے ایمرجنسی کیو آر کوڈ۔"
+        canonicalPath="/health-card"
+      />
       {/* Top Action Header (No Print) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print">
         <div>

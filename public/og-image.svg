@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#042F2E" />
+      <stop offset="50%" stop-color="#0F766E" />
+      <stop offset="100%" stop-color="#115E59" />
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Subtle Decorative Circles -->
+  <circle cx="1050" cy="120" r="280" fill="#14B8A6" opacity="0.15" />
+  <circle cx="150" cy="520" r="220" fill="#0D9488" opacity="0.2" />
+
+  <!-- Inner Glass Card Container -->
+  <rect x="80" y="70" width="1040" height="490" rx="28" fill="url(#cardBg)" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.5" filter="url(#shadow)" />
+
+  <!-- Logo Pill Icon -->
+  <g transform="translate(140, 130)">
+    <rect width="72" height="72" rx="20" fill="#14B8A6" />
+    <path d="M26 46 L46 26 M31 26 L46 41" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+    <circle cx="36" cy="36" r="18" fill="none" stroke="#ffffff" stroke-width="4.5" />
+  </g>
+
+  <!-- Brand Title -->
+  <text x="232" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#ffffff" letter-spacing="-0.5">DawaCard Lite</text>
+
+  <!-- Version / Status Badge -->
+  <g transform="translate(560, 146)">
+    <rect width="130" height="34" rx="17" fill="#CCFBF1" fill-opacity="0.2" stroke="#5EEAD4" stroke-width="1" />
+    <text x="65" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#5EEAD4" text-anchor="middle">OFFICIAL v1.0</text>
+  </g>
+
+  <!-- Main Headline -->
+  <text x="140" y="275" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="#ffffff" letter-spacing="-1">
+    AI Medication Management &amp;
+  </text>
+  <text x="140" y="340" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="#5EEAD4" letter-spacing="-1">
+    Emergency Health Card
+  </text>
+
+  <!-- Feature Pills -->
+  <g transform="translate(140, 395)">
+    <!-- Pill 1 -->
+    <rect x="0" y="0" width="260" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.2" />
+    <text x="130" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" fill="#E2E8F0" text-anchor="middle">📷 AI Prescription Scanner</text>
+
+    <!-- Pill 2 -->
+    <rect x="275" y="0" width="280" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.2" />
+    <text x="415" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" fill="#E2E8F0" text-anchor="middle">⚡ Drug Interaction Checker</text>
+
+    <!-- Pill 3 -->
+    <rect x="570" y="0" width="250" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.2" />
+    <text x="695" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600" fill="#E2E8F0" text-anchor="middle">🚨 Emergency EMT QR Code</text>
+  </g>
+
+  <!-- Urdu & English Bilingual Indicator -->
+  <text x="140" y="495" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="500" fill="#99F6E4">
+    🌐 English &amp; اردو • 100% Free &amp; Open Source • Supabase Cloud Sync
+  </text>
+  <text x="1040" y="495" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" fill="#ffffff" text-anchor="end" opacity="0.8">
+    dawa-card-lite.vercel.app
+  </text>
+</svg>
