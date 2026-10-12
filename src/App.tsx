@@ -115,6 +115,7 @@ export const AppContent: React.FC = () => {
         onClose={() => setIsMedicationModalOpen(false)}
         medicationToEdit={medicationToEdit}
         onSaved={handleMedicationSaved}
+        onAuthClick={handleOpenAuth}
       />
 
       <PrescriptionReaderModal

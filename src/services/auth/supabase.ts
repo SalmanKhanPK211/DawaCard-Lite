@@ -100,6 +100,12 @@ export async function getCurrentUser(): Promise<User | null> {
   if (!supabase) return null;
   try {
     const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session?.user) {
+      return session.user;
+    }
+    const {
       data: { user },
     } = await supabase.auth.getUser();
     return user;

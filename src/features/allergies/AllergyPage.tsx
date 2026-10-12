@@ -9,8 +9,10 @@ import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const AllergyPage: React.FC = () => {
+  const { user } = useAuth();
   const [allergyStatus, setAllergyStatusState] = useState<AllergyStatus>('unknown');
   const [allergies, setAllergies] = useState<AllergyRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +24,7 @@ export const AllergyPage: React.FC = () => {
   const [reportedReaction, setReportedReaction] = useState('');
   const [notes, setNotes] = useState('');
   const [allergenError, setAllergenError] = useState('');
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // Delete modal state
@@ -70,8 +73,15 @@ export const AllergyPage: React.FC = () => {
 
   const handleSaveAllergy = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaveError(null);
+
     if (!allergen.trim()) {
       setAllergenError('Allergen name is required.');
+      return;
+    }
+
+    if (!user) {
+      setSaveError('Authentication required: Please sign in to save allergies to the cloud database.');
       return;
     }
 
@@ -89,8 +99,9 @@ export const AllergyPage: React.FC = () => {
 
       setIsModalOpen(false);
       await loadAllergyData();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Save allergy error:', err);
+      setSaveError(err.message || 'Failed to save allergy to cloud database.');
     } finally {
       setIsSaving(false);
     }
@@ -307,6 +318,20 @@ export const AllergyPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         title={editingAllergy ? 'Edit Allergy Record' : 'Add New Allergen'}
       >
+        {!user && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Sign in required: You must be logged in to save allergies to your cloud database.</span>
+          </div>
+        )}
+
+        {saveError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-800 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{saveError}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSaveAllergy} className="space-y-4">
           <Input
             label="Allergen Name"
@@ -340,8 +365,8 @@ export const AllergyPage: React.FC = () => {
             <Button type="button" variant="outline" size="sm" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" size="sm" isLoading={isSaving}>
-              Save Allergen
+            <Button type="submit" size="sm" isLoading={isSaving} disabled={!user || isSaving}>
+              {!user ? 'Sign In Required' : 'Save Allergen'}
             </Button>
           </div>
         </form>

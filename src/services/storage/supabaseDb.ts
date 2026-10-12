@@ -135,11 +135,24 @@ export class SupabaseDbService {
 
     const row = mapMedicationToRow(medication, userId);
 
-    const { error } = await supabase.from('medications').upsert(row);
+    const isEditing = Boolean(input.id);
+    let queryError: any = null;
 
-    if (error) {
-      console.warn('Supabase saveMedication error:', error.message);
-      throw error;
+    if (isEditing) {
+      const { error } = await supabase
+        .from('medications')
+        .update(row)
+        .eq('id', id)
+        .eq('user_id', userId);
+      queryError = error;
+    } else {
+      const { error } = await supabase.from('medications').insert(row);
+      queryError = error;
+    }
+
+    if (queryError) {
+      console.error('Supabase saveMedication error:', queryError);
+      throw new Error(queryError.message || 'Failed to save medication to cloud database.');
     }
 
     return medication;
@@ -221,11 +234,24 @@ export class SupabaseDbService {
     };
 
     const row = mapAllergyToRow(record, userId);
-    const { error } = await supabase.from('allergies').upsert(row);
+    const isEditing = Boolean(input.id);
+    let queryError: any = null;
 
-    if (error) {
-      console.warn('Supabase saveAllergy error:', error.message);
-      throw error;
+    if (isEditing) {
+      const { error } = await supabase
+        .from('allergies')
+        .update(row)
+        .eq('id', id)
+        .eq('user_id', userId);
+      queryError = error;
+    } else {
+      const { error } = await supabase.from('allergies').insert(row);
+      queryError = error;
+    }
+
+    if (queryError) {
+      console.error('Supabase saveAllergy error:', queryError);
+      throw new Error(queryError.message || 'Failed to save allergy to cloud database.');
     }
 
     return record;

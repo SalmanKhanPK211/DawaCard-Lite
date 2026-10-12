@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, CloudSun, Moon, BedDouble, Zap } from 'lucide-react';
+import { Sun, CloudSun, Moon, BedDouble, Zap, AlertCircle, LogIn } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
@@ -7,6 +7,7 @@ import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
 import { Medication, MedicationStatus, TimeOfDay } from '../../types/medication';
 import { storageService } from '../../services/storage/db';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface MedicationModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export interface MedicationModalProps {
   medicationToEdit?: Medication | null;
   onSaved: () => void;
   initialValues?: Partial<Medication>;
+  onAuthClick?: () => void;
 }
 
 export const MedicationModal: React.FC<MedicationModalProps> = ({
@@ -22,7 +24,9 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
   medicationToEdit,
   onSaved,
   initialValues,
+  onAuthClick,
 }) => {
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [strength, setStrength] = useState('');
   const [dosageForm, setDosageForm] = useState('');
@@ -36,6 +40,7 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
   const [status, setStatus] = useState<MedicationStatus>('current');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<{ name?: string }>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -94,8 +99,15 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+
     if (!name.trim()) {
       setErrors({ name: 'Medication name is required.' });
+      return;
+    }
+
+    if (!user) {
+      setSubmitError('Authentication required: Please sign in or create an account to save medications to the cloud database.');
       return;
     }
 
@@ -119,8 +131,9 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
       });
       onSaved();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save medication:', err);
+      setSubmitError(err.message || 'Failed to save medication to cloud database.');
     } finally {
       setIsSubmitting(false);
     }
@@ -141,6 +154,39 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
       title={medicationToEdit ? 'Edit Medication Record' : 'Add Medication Record'}
       maxWidth="xl"
     >
+      {!user && (
+        <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <div>
+              <span className="font-semibold block text-amber-950">Sign In Required</span>
+              <span>You must be signed in to save prescriptions to your cloud database.</span>
+            </div>
+          </div>
+          {onAuthClick && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                onClose();
+                onAuthClick();
+              }}
+              className="shrink-0 bg-white"
+            >
+              Sign In
+            </Button>
+          )}
+        </div>
+      )}
+
+      {submitError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-center gap-2 shadow-xs">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span>{submitError}</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Section 1: Basic Details */}
         <div className="space-y-3">
@@ -296,8 +342,13 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
           <Button type="button" variant="outline" size="sm" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" size="sm" isLoading={isSubmitting}>
-            {medicationToEdit ? 'Update Medication' : 'Save Medication'}
+          <Button
+            type="submit"
+            size="sm"
+            isLoading={isSubmitting}
+            disabled={!user || isSubmitting}
+          >
+            {!user ? 'Sign In Required' : medicationToEdit ? 'Update Medication' : 'Save Medication'}
           </Button>
         </div>
       </form>
