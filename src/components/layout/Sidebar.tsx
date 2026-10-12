@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <div className="text-[11px] text-slate-400 leading-tight">
-          DawaCard Lite • Local-first with optional cloud sync
+          DawaCard Lite • Cloud Database with Supabase
         </div>
       </div>
     </aside>

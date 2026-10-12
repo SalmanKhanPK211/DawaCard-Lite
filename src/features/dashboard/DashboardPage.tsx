@@ -83,7 +83,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-emerald-100 uppercase tracking-wider">
-              Local-First Health Record
+              Cloud Health Record • Supabase
             </span>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               Your medication information, organized.
