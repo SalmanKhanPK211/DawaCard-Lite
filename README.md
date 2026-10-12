@@ -1,9 +1,10 @@
 # DawaCard Lite — Portable Health Summary & AI Prescription Reader
 
-> **Version:** 1.0 — MVP  
-> **Core Principle:** AI-assisted, human-verified, privacy-conscious, local-first.
+> **Live Deployment:** [https://dawa-card-lite.vercel.app](https://dawa-card-lite.vercel.app)  
+> **Version:** 1.0 — Production MVP  
+> **Core Principle:** AI-assisted, human-verified, clinical safety, cloud sync, bilingual (English & Urdu).
 
-DawaCard Lite is an open-source, local-first web application designed for patients and family caregivers to organize medication records, maintain explicit allergy information, and generate a printable one-page health card summary for doctor appointments.
+DawaCard Lite is an intelligent, patient-centric personal medication record, AI prescription reader, and emergency health card web application.
 
 ---
 
