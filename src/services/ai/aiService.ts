@@ -1,4 +1,6 @@
 import { PrescriptionExtractionResult, ExtractedField } from '../../types/ai';
+import { RegimenSafetyReport } from '../../types/safety';
+import { analyzeWithClinicalRules } from './conflictRules';
 
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL !== undefined
@@ -132,4 +134,72 @@ function validateAndFormatExtractionResult(data: any): PrescriptionExtractionRes
     warnings: Array.isArray(data.warnings) ? data.warnings.map(String) : [],
     processedAt: new Date().toISOString(),
   };
+}
+
+export async function checkSafetyInteractions(
+  medications: Array<{ name: string; strength?: string; dosageForm?: string; status?: string }>,
+  allergies: Array<{ allergen: string; reportedReaction?: string }>,
+  candidateMedication?: { name: string; strength?: string; dosageForm?: string }
+): Promise<RegimenSafetyReport> {
+  // Always evaluate clinical knowledge base as deterministic baseline
+  const ruleReport = analyzeWithClinicalRules(medications, allergies, candidateMedication);
+
+  // Attempt Gemini AI deep pharmacovigilance analysis via backend
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/check-interactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        medications: medications.filter((m) => m.status !== 'discontinued'),
+        allergies,
+        candidateMedication,
+      }),
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      if (json.success && json.data) {
+        const aiData = json.data;
+
+        // Merge AI conflicts with any verified rule-based conflicts to avoid omission
+        const mergedConflicts = [...(aiData.conflicts || [])];
+        for (const ruleConflict of ruleReport.conflicts) {
+          const exists = mergedConflicts.some(
+            (c: any) =>
+              c.substanceA?.toLowerCase() === ruleConflict.substanceA?.toLowerCase() &&
+              (c.substanceB || '').toLowerCase() === (ruleConflict.substanceB || '').toLowerCase()
+          );
+          if (!exists) {
+            mergedConflicts.push(ruleConflict);
+          }
+        }
+
+        const mergedFood = Array.from(
+          new Set([...(aiData.foodAndLifestyleWarnings || []), ...ruleReport.foodAndLifestyleWarnings])
+        );
+
+        let overallRisk = aiData.overallRisk || ruleReport.overallRisk;
+        if (mergedConflicts.some((c: any) => c.severity === 'critical')) {
+          overallRisk = 'critical';
+        } else if (mergedConflicts.some((c: any) => c.severity === 'high') && overallRisk !== 'critical') {
+          overallRisk = 'high';
+        }
+
+        return {
+          overallRisk,
+          totalCheckedMedications: ruleReport.totalCheckedMedications,
+          totalCheckedAllergies: ruleReport.totalCheckedAllergies,
+          conflicts: mergedConflicts,
+          foodAndLifestyleWarnings: mergedFood,
+          safeCombinationsNotes: aiData.safeCombinationsNotes || ruleReport.safeCombinationsNotes,
+          analyzedAt: new Date().toISOString(),
+          source: 'hybrid',
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('AI backend interaction check unavailable, using deterministic clinical rules:', err);
+  }
+
+  return ruleReport;
 }

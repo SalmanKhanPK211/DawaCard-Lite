@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Pill, ShieldAlert, FileText, LayoutDashboard, Menu, X, ScanLine, Plus, LogIn, LogOut } from 'lucide-react';
+import { Pill, ShieldAlert, ShieldCheck, FileText, LayoutDashboard, Menu, X, ScanLine, Plus, LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export interface MobileNavbarProps {
@@ -21,6 +21,7 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/medications', label: 'Medications', icon: Pill },
     { to: '/allergies', label: 'Allergies', icon: ShieldAlert },
+    { to: '/safety', label: 'AI Safety Checker', icon: ShieldCheck },
     { to: '/health-card', label: 'Health Card', icon: FileText },
   ];
 

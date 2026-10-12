@@ -21,6 +21,7 @@ import { Badge } from '../../components/ui/Badge';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
 import { EmergencyQRModal } from '../health-card/EmergencyQRModal';
+import { SafetyAlertWidget } from '../safety/SafetyAlertWidget';
 
 export interface DashboardPageProps {
   onAddMedicationClick: () => void;
@@ -193,6 +194,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </Card>
       </div>
+
+      {/* AI Drug-Drug & Allergy Conflict Monitor Widget */}
+      <SafetyAlertWidget />
 
       {/* 4-Box Daily Pill Schedule Organizer Grid on Dashboard */}
       {currentMeds.length > 0 && (

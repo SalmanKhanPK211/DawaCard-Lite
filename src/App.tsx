@@ -5,6 +5,7 @@ import { MobileNavbar } from './components/layout/MobileNavbar';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { MedicationListPage } from './features/medications/MedicationListPage';
 import { AllergyPage } from './features/allergies/AllergyPage';
+import { SafetyCheckerPage } from './features/safety/SafetyCheckerPage';
 import { HealthCardPage } from './features/health-card/HealthCardPage';
 import { MedicationModal } from './features/medications/MedicationModal';
 import { PrescriptionReaderModal } from './features/prescription-reader/PrescriptionReaderModal';
@@ -105,6 +106,7 @@ export const AppContent: React.FC = () => {
             }
           />
           <Route path="/allergies" element={<AllergyPage key={refreshKey} />} />
+          <Route path="/safety" element={<SafetyCheckerPage key={refreshKey} />} />
           <Route path="/health-card" element={<HealthCardPage key={refreshKey} />} />
         </Routes>
       </main>

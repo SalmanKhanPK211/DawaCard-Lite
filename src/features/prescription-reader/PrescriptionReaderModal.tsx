@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   HelpCircle,
   ShieldCheck,
+  ShieldAlert,
   X,
   FileText,
   Sun,
@@ -29,8 +30,11 @@ import {
   checkAiBackendStatus,
 } from '../../services/ai/aiService';
 import { PrescriptionExtractionResult, ExtractedField, ConfidenceCategory } from '../../types/ai';
-import { MedicationInput, MedicationStatus, TimeOfDay } from '../../types/medication';
+import { Medication, MedicationInput, MedicationStatus, TimeOfDay } from '../../types/medication';
+import { AllergyRecord } from '../../types/allergy';
 import { storageService } from '../../services/storage/db';
+import { analyzeWithClinicalRules } from '../../services/ai/conflictRules';
+import { RegimenSafetyReport } from '../../types/safety';
 
 export interface PrescriptionReaderModalProps {
   isOpen: boolean;
@@ -89,14 +93,34 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Check AI proxy health on modal open
+  // Safety conflict check state
+  const [existingMeds, setExistingMeds] = useState<Medication[]>([]);
+  const [existingAllergies, setExistingAllergies] = useState<AllergyRecord[]>([]);
+  const [safetyReport, setSafetyReport] = useState<RegimenSafetyReport | null>(null);
+
+  // Check AI proxy health and load existing data on modal open
   useEffect(() => {
     if (isOpen) {
       checkAiBackendStatus().then(setBackendStatus);
+      storageService.getMedications().then(setExistingMeds).catch(console.error);
+      storageService.getAllergies().then(setExistingAllergies).catch(console.error);
     } else {
       resetAll();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (step === 'review' && reviewFields.name.trim()) {
+      const report = analyzeWithClinicalRules(existingMeds, existingAllergies, {
+        name: reviewFields.name.trim(),
+        strength: reviewFields.strength,
+        dosageForm: reviewFields.dosageForm,
+      });
+      setSafetyReport(report);
+    } else {
+      setSafetyReport(null);
+    }
+  }, [step, reviewFields.name, reviewFields.strength, reviewFields.dosageForm, existingMeds, existingAllergies]);
 
   const resetAll = () => {
     setStep('upload');
@@ -394,6 +418,48 @@ export const PrescriptionReaderModal: React.FC<PrescriptionReaderModalProps> = (
           {formError && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-800 font-semibold">
               {formError}
+            </div>
+          )}
+
+          {/* AI Clinical Safety Check on Extracted Medication */}
+          {safetyReport && safetyReport.conflicts.length > 0 && (
+            <div
+              className={`p-3.5 rounded-xl border text-xs space-y-2 transition-all shadow-xs ${
+                safetyReport.overallRisk === 'critical'
+                  ? 'bg-red-50 border-red-200 text-red-950'
+                  : 'bg-amber-50 border-amber-200 text-amber-950'
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                <ShieldAlert
+                  className={`w-5 h-5 shrink-0 mt-0.5 ${
+                    safetyReport.overallRisk === 'critical' ? 'text-red-600' : 'text-amber-600'
+                  }`}
+                />
+                <div className="flex-1 space-y-1.5">
+                  <span className="font-bold block">
+                    AI Clinical Safety Alert: Potential Interaction with Extracted Drug
+                  </span>
+                  {safetyReport.conflicts.map((c, i) => (
+                    <div key={i} className="pt-1 text-xs space-y-0.5">
+                      <p className="font-semibold text-slate-900">{c.title}</p>
+                      <p className="opacity-90">{c.description}</p>
+                      <p className="font-medium pt-0.5">
+                        <span className="underline">Action</span>: {c.clinicalRecommendation}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {safetyReport && safetyReport.conflicts.length === 0 && reviewFields.name.trim() && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Safety Verified:</strong> Extracted medication "{reviewFields.name}" has 0 conflicts with your active medications or allergies.
+              </span>
             </div>
           )}
 

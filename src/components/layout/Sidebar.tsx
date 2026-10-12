@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Pill, ShieldAlert, FileText, LayoutDashboard, ScanLine, LogIn, LogOut, User } from 'lucide-react';
+import { Pill, ShieldAlert, ShieldCheck, FileText, LayoutDashboard, ScanLine, LogIn, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export interface SidebarProps {
@@ -20,6 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/medications', label: 'Medications', icon: Pill },
     { to: '/allergies', label: 'Allergies', icon: ShieldAlert },
+    { to: '/safety', label: 'AI Safety Checker', icon: ShieldCheck, badge: 'AI' },
     { to: '/health-card', label: 'Health Card', icon: FileText },
   ];
 
@@ -67,15 +68,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-emerald-50 text-[#0F766E] font-semibold'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`
                 }
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
+                <div className="flex items-center gap-3">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </div>
+                {'badge' in item && item.badge && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-teal-100 text-[#0F766E] border border-teal-200">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}

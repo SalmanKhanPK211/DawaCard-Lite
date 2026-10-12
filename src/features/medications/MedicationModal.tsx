@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, CloudSun, Moon, BedDouble, Zap, AlertCircle, LogIn } from 'lucide-react';
+import { Sun, CloudSun, Moon, BedDouble, Zap, AlertCircle, LogIn, ShieldAlert, ShieldCheck, Sparkles } from 'lucide-react';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
 import { Medication, MedicationStatus, TimeOfDay } from '../../types/medication';
+import { AllergyRecord } from '../../types/allergy';
 import { storageService } from '../../services/storage/db';
 import { useAuth } from '../../contexts/AuthContext';
+import { analyzeWithClinicalRules } from '../../services/ai/conflictRules';
+import { RegimenSafetyReport } from '../../types/safety';
 
 export interface MedicationModalProps {
   isOpen: boolean;
@@ -42,6 +45,38 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
   const [errors, setErrors] = useState<{ name?: string }>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Live safety conflict checker state
+  const [existingMeds, setExistingMeds] = useState<Medication[]>([]);
+  const [existingAllergies, setExistingAllergies] = useState<AllergyRecord[]>([]);
+  const [safetyReport, setSafetyReport] = useState<RegimenSafetyReport | null>(null);
+  const [overrideAcknowledged, setOverrideAcknowledged] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      storageService.getMedications().then(setExistingMeds).catch(console.error);
+      storageService.getAllergies().then(setExistingAllergies).catch(console.error);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!name.trim()) {
+      setSafetyReport(null);
+      setOverrideAcknowledged(false);
+      return;
+    }
+
+    const otherMeds = existingMeds.filter(
+      (m) => m.id !== medicationToEdit?.id && m.status !== 'discontinued'
+    );
+    const report = analyzeWithClinicalRules(otherMeds, existingAllergies, {
+      name: name.trim(),
+      strength,
+      dosageForm,
+    });
+
+    setSafetyReport(report);
+  }, [name, strength, dosageForm, existingMeds, existingAllergies, medicationToEdit]);
 
   useEffect(() => {
     if (medicationToEdit) {
@@ -108,6 +143,11 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
 
     if (!user) {
       setSubmitError('Authentication required: Please sign in or create an account to save medications to the cloud database.');
+      return;
+    }
+
+    if (safetyReport && safetyReport.overallRisk === 'critical' && !overrideAcknowledged) {
+      setSubmitError('Clinical Safety Alert: A critical drug interaction or allergy cross-sensitivity was flagged for this medication. Please review the safety warning below and check the physician confirmation box to proceed.');
       return;
     }
 
@@ -229,6 +269,69 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
               onChange={(e) => setRoute(e.target.value)}
             />
           </div>
+
+          {/* Live Real-Time AI Safety & Interaction Alert */}
+          {safetyReport && safetyReport.conflicts.length > 0 && (
+            <div
+              className={`p-3.5 rounded-xl border text-xs space-y-2.5 transition-all shadow-xs ${
+                safetyReport.overallRisk === 'critical'
+                  ? 'bg-red-50/80 border-red-200 text-red-950'
+                  : 'bg-amber-50/80 border-amber-200 text-amber-950'
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                <ShieldAlert
+                  className={`w-4 h-4 shrink-0 mt-0.5 ${
+                    safetyReport.overallRisk === 'critical' ? 'text-red-600' : 'text-amber-600'
+                  }`}
+                />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3 text-[#0F766E]" />
+                      {safetyReport.overallRisk === 'critical'
+                        ? 'Critical Safety Conflict Detected'
+                        : 'Interaction Caution Advisory'}
+                    </span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-black/10">
+                      {safetyReport.overallRisk} risk
+                    </span>
+                  </div>
+
+                  {safetyReport.conflicts.map((c, i) => (
+                    <div key={i} className="pt-1.5 border-t border-black/10 space-y-1">
+                      <p className="font-semibold text-slate-900">{c.title}</p>
+                      <p className="opacity-90 leading-relaxed">{c.description}</p>
+                      <p className="font-medium pt-0.5">
+                        <span className="underline">Action</span>: {c.clinicalRecommendation}
+                      </p>
+                    </div>
+                  ))}
+
+                  {safetyReport.overallRisk === 'critical' && (
+                    <label className="flex items-center gap-2 mt-2 pt-2 border-t border-red-200 cursor-pointer font-medium text-red-900">
+                      <input
+                        type="checkbox"
+                        checked={overrideAcknowledged}
+                        onChange={(e) => setOverrideAcknowledged(e.target.checked)}
+                        className="rounded border-red-300 text-red-600 focus:ring-red-500"
+                      />
+                      <span>I confirm my prescribing physician or pharmacist approved this combination.</span>
+                    </label>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {safetyReport && safetyReport.conflicts.length === 0 && name.trim().length >= 3 && (
+            <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Safety Check Passed:</strong> 0 interactions detected with your active medications or recorded allergies.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Section 2: Instructions & Daily Pillbox Timings */}
