@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
-import { Database, ShieldCheck, Download, Upload, Trash2, Info } from 'lucide-react';
+import { Database, ShieldCheck, Download, Upload, Trash2, Info, Cloud, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { storageService } from '../../services/storage/db';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface LocalDataBannerProps {
   onDataChanged?: () => void;
 }
 
 export const LocalDataBanner: React.FC<LocalDataBannerProps> = ({ onDataChanged }) => {
+  const { user } = useAuth();
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
+
+  const handleSyncToCloud = async () => {
+    setIsSyncing(true);
+    setSyncFeedback(null);
+    try {
+      const res = await storageService.syncLocalToCloud();
+      if (res.success) {
+        setSyncFeedback(`Successfully synced ${res.count} records to your cloud database!`);
+        if (onDataChanged) onDataChanged();
+      } else {
+        setSyncFeedback(`Sync note: ${res.error || 'Could not sync records'}`);
+      }
+    } catch (err: any) {
+      setSyncFeedback(`Sync failed: ${err.message || 'Unknown error'}`);
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncFeedback(null), 4000);
+    }
+  };
 
   const handleExport = async () => {
     try {
@@ -56,20 +79,55 @@ export const LocalDataBanner: React.FC<LocalDataBannerProps> = ({ onDataChanged 
 
   return (
     <>
-      <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-lg p-3 text-xs flex flex-wrap items-center justify-between gap-2 text-emerald-900 no-print">
-        <div className="flex items-center gap-2 font-medium">
-          <ShieldCheck className="w-4 h-4 text-[#0F766E] shrink-0" />
-          <span>
-            <strong>Local-First & Private:</strong> Your medication data is stored inside your browser's IndexedDB. No cloud account or automatic tracking.
-          </span>
+      {user ? (
+        <div className="bg-teal-50/90 border border-teal-200/90 rounded-lg p-3 text-xs flex flex-wrap items-center justify-between gap-2 text-teal-950 no-print">
+          <div className="flex items-center gap-2 font-medium">
+            <Cloud className="w-4 h-4 text-[#0F766E] shrink-0" />
+            <span>
+              <strong>Cloud Database Active (Supabase):</strong> Logged in as{' '}
+              <span className="font-semibold text-[#0F766E]">{user.email}</span>. Data is securely saved to your private database.
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSyncToCloud}
+              disabled={isSyncing}
+              className="text-[#0F766E] font-semibold hover:underline cursor-pointer flex items-center gap-1.5"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+              <span>{isSyncing ? 'Syncing...' : 'Sync Local to Cloud'}</span>
+            </button>
+            <button
+              onClick={() => setIsPrivacyModalOpen(true)}
+              className="text-slate-600 font-semibold hover:underline cursor-pointer"
+            >
+              Manage Data
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => setIsPrivacyModalOpen(true)}
-          className="text-[#0F766E] font-semibold hover:underline cursor-pointer underline-offset-2"
-        >
-          Manage Data & Privacy
-        </button>
-      </div>
+      ) : (
+        <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-lg p-3 text-xs flex flex-wrap items-center justify-between gap-2 text-emerald-900 no-print">
+          <div className="flex items-center gap-2 font-medium">
+            <ShieldCheck className="w-4 h-4 text-[#0F766E] shrink-0" />
+            <span>
+              <strong>Local-First & Private:</strong> Data is saved in browser IndexedDB. Sign in anytime to sync across devices via Supabase cloud database.
+            </span>
+          </div>
+          <button
+            onClick={() => setIsPrivacyModalOpen(true)}
+            className="text-[#0F766E] font-semibold hover:underline cursor-pointer underline-offset-2"
+          >
+            Manage Data & Privacy
+          </button>
+        </div>
+      )}
+
+      {syncFeedback && (
+        <div className="bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs px-3 py-2 rounded-lg flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{syncFeedback}</span>
+        </div>
+      )}
 
       {/* Privacy & Data Management Modal */}
       <Modal
