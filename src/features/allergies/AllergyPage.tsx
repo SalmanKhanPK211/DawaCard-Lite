@@ -135,7 +135,7 @@ export const AllergyPage: React.FC = () => {
           {/* Option 1: Known Allergies */}
           <button
             onClick={() => handleStatusChange('known_allergies')}
-            className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+            className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 hover:-translate-y-0.5 hover:shadow-xs ${
               allergyStatus === 'known_allergies'
                 ? 'border-[#0F766E] bg-emerald-50/50 ring-2 ring-[#0F766E]/20'
                 : 'border-slate-200 bg-white hover:border-slate-300'
@@ -164,7 +164,7 @@ export const AllergyPage: React.FC = () => {
           {/* Option 2: Explicit No Known Allergies */}
           <button
             onClick={() => handleStatusChange('no_known_allergies')}
-            className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+            className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 hover:-translate-y-0.5 hover:shadow-xs ${
               allergyStatus === 'no_known_allergies'
                 ? 'border-[#0F766E] bg-emerald-50/50 ring-2 ring-[#0F766E]/20'
                 : 'border-slate-200 bg-white hover:border-slate-300'
@@ -193,7 +193,7 @@ export const AllergyPage: React.FC = () => {
           {/* Option 3: Unknown / Not Recorded */}
           <button
             onClick={() => handleStatusChange('unknown')}
-            className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+            className={`p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 hover:-translate-y-0.5 hover:shadow-xs ${
               allergyStatus === 'unknown'
                 ? 'border-[#0F766E] bg-emerald-50/50 ring-2 ring-[#0F766E]/20'
                 : 'border-slate-200 bg-white hover:border-slate-300'

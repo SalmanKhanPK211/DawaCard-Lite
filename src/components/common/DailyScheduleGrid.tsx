@@ -101,7 +101,7 @@ export const DailyScheduleGrid: React.FC<DailyScheduleGridProps> = ({
           return (
             <div
               key={slot.id}
-              className={`border border-slate-200 rounded-xl overflow-hidden flex flex-col justify-between ${slot.boxBg} shadow-xs`}
+              className={`border border-slate-200 rounded-xl overflow-hidden flex flex-col justify-between ${slot.boxBg} shadow-xs hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-200 ease-in-out`}
             >
               {/* Slot Header */}
               <div
@@ -126,7 +126,7 @@ export const DailyScheduleGrid: React.FC<DailyScheduleGridProps> = ({
                   slot.meds.map((m) => (
                     <div
                       key={m.id}
-                      className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs space-y-1 text-xs"
+                      className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs space-y-1 text-xs hover:border-slate-300 hover:shadow-xs transition-all duration-150"
                     >
                       <div className="font-bold text-slate-900 flex items-center justify-between">
                         <span>{m.name}</span>
