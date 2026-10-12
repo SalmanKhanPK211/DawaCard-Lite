@@ -108,6 +108,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <ScanLine className="w-4 h-4 text-white shrink-0" />
               <span className="text-white">Scan Prescription (AI)</span>
             </button>
+            <button
+              onClick={() => navigate('/manual')}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-teal-800/80 hover:bg-teal-900 text-teal-100 border border-teal-600/40 font-medium text-xs transition-colors cursor-pointer"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+              <span>User Manual / رہنمائے صارف</span>
+            </button>
           </div>
         </div>
       </div>

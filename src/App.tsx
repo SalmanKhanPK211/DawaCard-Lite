@@ -7,11 +7,13 @@ import { MedicationListPage } from './features/medications/MedicationListPage';
 import { AllergyPage } from './features/allergies/AllergyPage';
 import { SafetyCheckerPage } from './features/safety/SafetyCheckerPage';
 import { HealthCardPage } from './features/health-card/HealthCardPage';
+import { UserManualPage } from './features/manual/UserManualPage';
 import { MedicationModal } from './features/medications/MedicationModal';
 import { PrescriptionReaderModal } from './features/prescription-reader/PrescriptionReaderModal';
 import { EmergencyViewerModal } from './features/health-card/EmergencyViewerModal';
 import { AuthModal } from './features/auth/AuthModal';
 import { AuthProvider } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { decodeEmergencyPayload, EmergencyDataPayload } from './utils/qrPayload';
 import { Medication } from './types/medication';
 
@@ -108,6 +110,7 @@ export const AppContent: React.FC = () => {
           <Route path="/allergies" element={<AllergyPage key={refreshKey} />} />
           <Route path="/safety" element={<SafetyCheckerPage key={refreshKey} />} />
           <Route path="/health-card" element={<HealthCardPage key={refreshKey} />} />
+          <Route path="/manual" element={<UserManualPage key={refreshKey} />} />
         </Routes>
       </main>
 
@@ -148,9 +151,11 @@ export const AppContent: React.FC = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <LanguageProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

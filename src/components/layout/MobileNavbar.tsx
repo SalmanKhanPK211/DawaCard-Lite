@@ -1,7 +1,22 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Pill, ShieldAlert, ShieldCheck, FileText, LayoutDashboard, Menu, X, ScanLine, Plus, LogIn, LogOut } from 'lucide-react';
+import {
+  Pill,
+  ShieldAlert,
+  ShieldCheck,
+  FileText,
+  LayoutDashboard,
+  Menu,
+  X,
+  ScanLine,
+  Plus,
+  LogIn,
+  LogOut,
+  BookOpen,
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { LanguageToggle } from '../common/LanguageToggle';
 
 export interface MobileNavbarProps {
   onScanClick: () => void;
@@ -16,13 +31,15 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
 
   const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/medications', label: 'Medications', icon: Pill },
-    { to: '/allergies', label: 'Allergies', icon: ShieldAlert },
-    { to: '/safety', label: 'AI Safety Checker', icon: ShieldCheck },
-    { to: '/health-card', label: 'Health Card', icon: FileText },
+    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/medications', label: t('nav.medications'), icon: Pill },
+    { to: '/allergies', label: t('nav.allergies'), icon: ShieldAlert },
+    { to: '/safety', label: t('nav.safety'), icon: ShieldCheck },
+    { to: '/health-card', label: t('nav.healthCard'), icon: FileText },
+    { to: '/manual', label: t('nav.userManual'), icon: BookOpen },
   ];
 
   return (
@@ -36,6 +53,8 @@ export const MobileNavbar: React.FC<MobileNavbarProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageToggle />
+
           <button
             onClick={onAddMedicationClick}
             className="bg-[#0F766E] text-white p-2 rounded-lg text-xs font-medium flex items-center gap-1 cursor-pointer"

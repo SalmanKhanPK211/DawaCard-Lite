@@ -1,7 +1,20 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Pill, ShieldAlert, ShieldCheck, FileText, LayoutDashboard, ScanLine, LogIn, LogOut, User } from 'lucide-react';
+import {
+  Pill,
+  ShieldAlert,
+  ShieldCheck,
+  FileText,
+  LayoutDashboard,
+  ScanLine,
+  LogIn,
+  LogOut,
+  User,
+  BookOpen,
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { LanguageToggle } from '../common/LanguageToggle';
 
 export interface SidebarProps {
   onScanClick: () => void;
@@ -15,29 +28,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onAuthClick,
 }) => {
   const { user, signOut } = useAuth();
+  const { t, isUrdu } = useLanguage();
 
   const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/medications', label: 'Medications', icon: Pill },
-    { to: '/allergies', label: 'Allergies', icon: ShieldAlert },
-    { to: '/safety', label: 'AI Safety Checker', icon: ShieldCheck, badge: 'AI' },
-    { to: '/health-card', label: 'Health Card', icon: FileText },
+    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/medications', label: t('nav.medications'), icon: Pill },
+    { to: '/allergies', label: t('nav.allergies'), icon: ShieldAlert },
+    { to: '/safety', label: t('nav.safety'), icon: ShieldCheck, badge: 'AI' },
+    { to: '/health-card', label: t('nav.healthCard'), icon: FileText },
+    { to: '/manual', label: t('nav.userManual'), icon: BookOpen },
   ];
 
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-screen sticky top-0 shrink-0 no-print hidden md:flex">
       <div>
-        {/* App Brand Header */}
-        <div className="p-5 border-b border-slate-100 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#0F766E] flex items-center justify-center text-white shadow-xs">
-            <Pill className="w-5 h-5" />
+        {/* App Brand Header & Language Switcher */}
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center text-white shadow-xs shrink-0">
+              <Pill className="w-4 h-4" />
+            </div>
+            <div>
+              <h1 className="font-bold text-slate-900 text-sm leading-tight">DawaCard Lite</h1>
+              <span className="text-[10px] font-medium px-1.5 py-0.2 rounded-md bg-emerald-50 text-[#0F766E] border border-emerald-200">
+                v1.0 MVP
+              </span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-slate-900 text-base leading-tight">DawaCard Lite</h1>
-            <span className="text-[11px] font-medium px-1.5 py-0.2 rounded-md bg-emerald-50 text-[#0F766E] border border-emerald-200">
-              v1.0 MVP
-            </span>
-          </div>
+
+          <LanguageToggle />
         </div>
 
         {/* Action Quick Launchers */}
@@ -46,16 +65,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onAddMedicationClick}
             className="w-full flex items-center justify-center gap-2 bg-[#0F766E] hover:bg-[#115E59] text-white px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            <Pill className="w-4 h-4" />
-            <span>Add Medication</span>
+            <Pill className="w-4 h-4 shrink-0" />
+            <span>{t('action.addMedication')}</span>
           </button>
 
           <button
             onClick={onScanClick}
             className="w-full flex items-center justify-center gap-2 bg-teal-50 hover:bg-teal-100 text-[#0F766E] border border-teal-200 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
-            <ScanLine className="w-4 h-4" />
-            <span>Scan Prescription (AI)</span>
+            <ScanLine className="w-4 h-4 shrink-0" />
+            <span>{t('action.scanPrescription')}</span>
           </button>
         </div>
 
