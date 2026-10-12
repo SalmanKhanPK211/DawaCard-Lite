@@ -7,7 +7,6 @@ import { PatientProfile } from '../../types/patient';
 import { storageService } from '../../services/storage/db';
 import { Button } from '../../components/ui/Button';
 import { PatientProfileModal } from '../patient/PatientProfileModal';
-import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
 import { EmergencyQRModal } from './EmergencyQRModal';
 import { generateEmergencyPayload, getEmergencyUrl } from '../../utils/qrPayload';
@@ -136,8 +135,6 @@ export const HealthCardPage: React.FC = () => {
           <span>Include Discontinued Medications</span>
         </label>
       </div>
-
-      <LocalDataBanner onDataChanged={loadHealthCardData} />
 
       {/* PRINTABLE HEALTH CARD SUMMARY CONTAINER */}
       <div className="bg-white rounded-2xl border border-slate-300 p-8 shadow-sm print-page space-y-6">

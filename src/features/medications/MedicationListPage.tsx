@@ -6,7 +6,6 @@ import { MedicationCard } from './MedicationCard';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
-import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 
 export interface MedicationListPageProps {
@@ -89,7 +88,6 @@ export const MedicationListPage: React.FC<MedicationListPageProps> = ({
         </div>
       </div>
 
-      <LocalDataBanner onDataChanged={loadMedications} />
       <DisclaimerBanner />
 
       {/* Filter and Search Bar */}

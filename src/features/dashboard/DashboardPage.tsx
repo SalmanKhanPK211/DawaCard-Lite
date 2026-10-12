@@ -18,7 +18,6 @@ import { loadSampleData } from '../../utils/sampleData';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 import { DailyScheduleGrid } from '../../components/common/DailyScheduleGrid';
 import { EmergencyQRModal } from '../health-card/EmergencyQRModal';
@@ -112,7 +111,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
-      <LocalDataBanner onDataChanged={loadData} />
       <DisclaimerBanner />
 
       {/* Overview Stat Cards */}

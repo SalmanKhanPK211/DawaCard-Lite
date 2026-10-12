@@ -7,7 +7,6 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
-import { LocalDataBanner } from '../../components/common/LocalDataBanner';
 import { DisclaimerBanner } from '../../components/common/DisclaimerBanner';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -123,7 +122,6 @@ export const AllergyPage: React.FC = () => {
         </p>
       </div>
 
-      <LocalDataBanner onDataChanged={loadAllergyData} />
       <DisclaimerBanner />
 
       {/* 3 Explicit Allergy States Selector */}
